@@ -7,8 +7,8 @@ export default function Favorites({ user }) {
     useEffect(() => {
         (async () => {
             try {
-                console.log(userid)
-                const response = await userApi.getUserFavorites(userid)
+                console.log(user)
+                const response = await userApi.getUserFavorites(user._id)
                 setFavorites(response)
             } catch (err) {
                 console.log(err)
@@ -27,9 +27,7 @@ export default function Favorites({ user }) {
                             <img src={favorite.img} />
                             <p>{favorite.foodTruckName}</p>
                             <p>{favorite.description}</p>
-
                         </div>
-
                     ))
                 }
             </div>
