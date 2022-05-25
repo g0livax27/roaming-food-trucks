@@ -3,8 +3,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import styles from './ResultMap.module.css'
+import StarDisplay from '../StarDisplay/StarDisplay';
 
-export default function ResultsMap({resultTruck}) {
+export default function ResultsMap({resultTruck, filteredList}) {
 	
 	const [loaded, setLoaded] = useState(null)
 	const [selectedTruck, setSelectedTruck] = useState(null);
@@ -20,20 +21,20 @@ export default function ResultsMap({resultTruck}) {
 	};
 
 	useEffect(() => {
-		if(resultTruck.length){
+		if(filteredList.length){
 			let loadingCenter = {
-				lng: resultTruck[0].location.geoLocation.coordinates[0],
-				lat: resultTruck[0].location.geoLocation.coordinates[1]
+				lng: filteredList[0].location.geoLocation.coordinates[0],
+				lat: filteredList[0].location.geoLocation.coordinates[1]
 			}
 			setCenter(loadingCenter)
 			setLoaded(true)
 		} else {
 			setLoaded(true)
 		}
-	  }, [])
+	  }, [filteredList])
 
 
-	const mapMarkers = resultTruck.map((truck) => (
+	const mapMarkers = filteredList.map((truck) => (
 		<Marker
 			key={truck._id}
 			position={{
@@ -77,8 +78,13 @@ export default function ResultsMap({resultTruck}) {
 					}}
 				>
 					<div>
-						<h4 className={styles.infoWindowTitle}>{selectedTruck.foodTruckName}</h4>
-						<p className={styles.address}>{selectedTruck.location.street}, {selectedTruck.location.city}, {selectedTruck.location.state}</p>
+						<div className={styles.mapDetails}>
+							<div>
+								<h4 className={styles.infoWindowTitle}>{selectedTruck.foodTruckName}</h4>
+								<p className={styles.address}>{selectedTruck.location.street}, {selectedTruck.location.city}, {selectedTruck.location.state}</p>
+							</div>
+							<StarDisplay foodTruck={selectedTruck} options={{displayNumber:false}} />
+						</div>
 						<hr className={styles.rule} />
 						<p>{selectedTruck.description}</p>
 						<Link to={`/foodtruck/detailpage/${selectedTruck._id}`}><button className={`button ${styles.button}`}>Explore the Menu</button></Link>

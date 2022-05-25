@@ -1,10 +1,16 @@
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import styles from './ResultList.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import StarDisplay from "../StarDisplay/StarDisplay"
 
-export default function ({resultTruck, starRate, priceRate, cuisines}) {
-const navigate = useNavigate()
+export default function ({resultTruck, starRate, priceRate, cuisines, filteredList, setFilteredList}) {
+
+    useEffect(() => {
+          setFilteredList(resultTruck.filter(starFilter).filter(priceFilter).filter(cuisineFilter))
+      }, [starRate, priceRate, cuisines, resultTruck])
+
+    const navigate = useNavigate()
 
     const starFilter = (truck) => {
         if (!starRate) return truck
@@ -13,7 +19,7 @@ const navigate = useNavigate()
 
     const priceFilter = (truck) => {
         if (!priceRate) return truck
-        if (truck.priceRating >= priceRate) return truck
+        if (truck.priceRating === priceRate) return truck
     }
 
     const cuisineFilter = (truck) => {
@@ -25,28 +31,34 @@ const navigate = useNavigate()
         <>
             <div className={styles.Card}>
                 {
-                    resultTruck.filter(starFilter).filter(priceFilter).filter(cuisineFilter).length === 0 ?
+                    filteredList.length === 0 ?
                         <>
                             <h3>No trucks match your criteria.</h3>
                         </>
                     :
-                    resultTruck.filter(starFilter).filter(priceFilter).filter(cuisineFilter).map((truck) => (
-                        console.log(truck),
+                    filteredList.map((truck) => (
                         <div key={truck._id} onClick={() => navigate(`/foodtruck/detailpage/${truck._id}`)} >
-                            <img src={truck.img} height='250' width='300' />
+                            <img src={truck.img} className={styles.truckImage} />
                             <div className={styles.Banner}>
                                 <div className={styles.BannerTitle}>
-                                    <h5>{truck.foodTruckName}</h5>
+                                    <h4>{truck.foodTruckName}</h4>
                                 </div>
-                                    {
-                                        truck.currentRating ?
-                                        <StarDisplay foodTruck={truck} options={{edit:false, displayNumber:true}} />
-                                        : 
-                                        "No reviews yet"
-                                    }
-                                    <p>{truck.cuisine.join(', ')}</p>
-                                <p><FontAwesomeIcon className={styles.Icon} icon="fa-solid fa-clock" /> Wait time</p>
-                                <p><img src="/assets/tiny_truck.png" width='20px'></img> {truck.location.street}, {truck.location.city} </p>
+                                <p className={styles.grayText}>                                {
+                                    truck.priceRating === 1 ? "$" : truck.priceRating === 2 ? "$$" : truck.priceRating === 3 ? "$$$" : "$$$$"
+                                } — {truck.cuisine.join(', ')}</p>
+                                {
+                                    truck.currentRating ?
+                                    <StarDisplay foodTruck={truck} options={{edit:false, displayNumber:true}} />
+                                    : 
+                                    <div>No reviews yet</div>
+                                }
+                                <br />
+                                <p className={styles.TruckText}>{truck.description}</p>
+                                <br />
+                                <div className={styles.TruckStats}>
+                                <p className={styles.TruckText}><FontAwesomeIcon className={styles.Icon} icon="fa-solid fa-clock" /> Wait time: None</p>
+                                <p className={styles.TruckText}><img src="/assets/tiny_truck.png" width='20px'></img> {truck.location.street}, {truck.location.city} </p>
+                                </div>
                             </div>
                         </div>
                     ))

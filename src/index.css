@@ -21,6 +21,14 @@ main {
     padding:30px 5px;
 }
 
+section {
+    margin:20px 0
+}
+
+.heavy {
+    font-weight:700;
+}
+
 .signup-button{ 
     border-radius: 10px;
     background: var(--white);
@@ -52,4 +60,10 @@ input[type=text] {
     padding-left:10px;
     border:1px solid lightgray;
     border-radius:5px;
+    font-weight:300;
+}
+
+.center {
+    text-align:center;
+    margin-top:50px;
 }

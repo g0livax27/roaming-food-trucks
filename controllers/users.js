@@ -1,7 +1,7 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
-const User = require('../models/user')
+const User = require('../models/User')
 
 module.exports = {
     createUser,
@@ -10,7 +10,7 @@ module.exports = {
     signin,
     logout,
     getUserFavorites,
-    addNewFavorite,
+    toggleFavorite,
     addNewRecent
 }
 
@@ -29,7 +29,7 @@ async function createUser(req, res) {
 
 async function getUser(req, res) {
     try {
-        const getUser = await User.findOne({ userid: req.params.userid })
+        const getUser = await User.findOne({ userid: req.params.userid }).populate("favorites").populate("recents")
         if (!getUser) {
             throw new Error()
         }
@@ -43,7 +43,10 @@ async function getUser(req, res) {
 // FAVORITES 
 async function getUserFavorites(req, res) {
     try {
-        const getUser = await User.findOne({ _id: req.params.id }).populate("favorites").populate("recents")
+        const getUser = await User.findOne({ _id: req.params.id }).populate("favorites").populate("recents").populate({
+            path: 'reviews',
+            populate: { path: 'foodTruck' }
+          })
         if (!getUser) {
             throw new Error()
         }
@@ -54,13 +57,17 @@ async function getUserFavorites(req, res) {
     }
 }
 
-async function addNewFavorite(req, res) {
+async function toggleFavorite(req, res) {
     try {
         const updatedUser = await User.findById(req.params.userid)
         if (!updatedUser) {
             throw new Error()
         }
-        updatedUser.favorites.push(req.body.truck)
+        if (updatedUser.favorites.indexOf(req.body.truck) === -1) {
+            updatedUser.favorites.push(req.body.truck)
+        } else {
+            updatedUser.favorites.splice(updatedUser.favorites.indexOf(req.body.truck), 1)
+        }
         updatedUser.save()
         res.status(200).json(updatedUser)
     }
@@ -77,7 +84,15 @@ async function addNewRecent(req, res) {
         if (!updatedUser) {
             throw new Error()
         }
-        updatedUser.recents.push(req.body.truck)
+        if (updatedUser.recents.includes(req.body.truck)) {
+            updatedUser.recents.splice(updatedUser.recents.indexOf(req.body.truck), 1)
+            updatedUser.recents.unshift(req.body.truck)
+        } else if (updatedUser.recents.indexOf(req.body.truck) === -1) {
+            updatedUser.recents.unshift(req.body.truck)
+            if (updatedUser.recents.length > 12) {
+                updatedUser.recents.pop()
+            }
+        }
         updatedUser.save()
         res.status(200).json(updatedUser)
     }

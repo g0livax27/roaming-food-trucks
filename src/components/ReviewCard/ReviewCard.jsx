@@ -4,18 +4,22 @@
 import styles from "./ReviewCard.module.css";
 import { Card, CardGroup } from "react-bootstrap";
 
+import StarDisplay from "../StarDisplay/StarDisplay";
+
 export default function ReviewCard( {foodTruck} ) {
     return (
         <>
-            <div className={styles.ReviewCard}>
+            <section className={styles.ReviewCard}>
                 <div>
-                    <h4>Reviews</h4>
+                    <h4 className="heavy">Reviews</h4>
                     {
                     foodTruck.reviews && foodTruck.reviews.length > 0 ?
                     foodTruck.reviews.map((review) => (
-                        <Card className={styles.ReviewDescription}>
+                        <Card className={styles.ReviewDescription} key={review._id}>
                            <Card.Body>
-                               {review.review}
+                            <StarDisplay review={review} options={{displayNumber:true}} />
+                            <br />
+                            {review.review}
                             </Card.Body> 
                         </Card>  
                     ))
@@ -23,7 +27,7 @@ export default function ReviewCard( {foodTruck} ) {
                     `${foodTruck.foodTruckName} has no reviews. be the first to review it!`
                     }
                 </div> 
-            </div>
+            </section>
         </>
     );
 };
