@@ -1,28 +1,29 @@
-.StarRating{
+.pricelist{
     border-top: solid grey;
     padding: 5px 0;
 }
 
-.StarRating > button {
+.pricelist  > div > button {
     color: grey;
     border: none;
     background: none;
-    padding: 0 2px;
 }
 
-.StarRating > button > span:hover {
-    color: red
-}
-
-.StarRating > div {
+.pricelist > div {
     display: flex;
     align-items: baseline;
     gap: 5px;
     justify-content: space-between;
 }
 
-.StarRating > div > button {
+.pricebutton{
+    border-radius: 20px;
+}
+
+.pricelist > button {
     color: grey;
-    border: none;
-    background: none;
+    background-color: white;
+    border-radius: 10px;
+    margin-left: 2%; 
+    padding: 2px 6px;
 }
